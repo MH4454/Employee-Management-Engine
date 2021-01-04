@@ -9,7 +9,97 @@ const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
+const { inherits } = require("util");
+const teamMates = []
 
+function employeeQuestionPrompt(){
+    return inquirer.prompt([
+        {
+            type: 'input',
+            message: 'What is the employee name?',
+            name: 'name',
+        },
+        {
+            type: 'input',
+            message: 'What is the employee identification number?',
+            name: 'id',
+        },
+        {
+            type: 'input',
+            message: 'What is the employee e-mail address',
+            name: 'email',
+        },
+        {
+            type: 'list',
+            message: 'What is the employee role?',
+            name: 'role',
+            choices: ['Intern', 'Engineer', 'Manager']
+        },
+        {
+            type: 'input',
+            message: 'What is the employee school name?',
+            name: 'school',
+            when: function (answers) {
+                return answers.role === 'Intern'
+            }
+        },
+        {
+            type: 'input',
+            message: 'What is the employee Github username?',
+            name: 'github',
+            when: function (answers) {
+                return answers.role === 'Engineer'
+            }
+        },
+        {
+            type: 'input',
+            message: 'What is the employee office number?',
+            name: 'officeNumber',
+            when: function (answers) {
+                return answers.role === 'Manager'
+            }
+        },
+        {
+            type: 'confirm',
+            message: 'Do you want to add another employee?',
+            name: 'w4',
+            default: 'Y'
+        }
+    ])
+};
+
+init() {
+    employeeQuestionPrompt().then((userData) => {
+        if (userData.role === 'Intern') {
+            const newInt = new Intern (userData.name, userData.id, userData.email, userData.role, userData.school);
+            teamMates.push(newInt);
+            console.log('Adding new Intern!')
+        }
+        else if (userData.role === 'Engineer') {
+            const newEng = new Engineer (userData.name, userData.id, userData.email, userData.role, userData.github);
+            teamMates.push(newEng);
+            console.log('Adding new Engineer!')
+        }
+        else if (userData.role === 'Manager') {
+            const newMan = new Manager (userData.name, userData.id, userData.email, userData.role, userData.officeNumber);
+            teamMates.push(newMan);
+            console.log('Adding new Manager!')
+        }
+        else {
+            throw console.error("Please enter a valid role");
+        }
+        if (userData.w4 === true) {
+            init()
+        }
+        else {
+            console.log('Generating team')
+            const renderedTeamMates = render(teamMates);
+            fs.writeFileSync(outputPath, renderedTeamMates, {}, (err)
+            => err ? console.log(err) : console.log("Team generated"))
+        };
+    })
+};
+init();
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
