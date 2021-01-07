@@ -68,20 +68,20 @@ function employeeQuestionPrompt(){
     ])
 };
 
-init() {
+function init() {
     employeeQuestionPrompt().then((userData) => {
         if (userData.role === 'Intern') {
-            const newInt = new Intern (userData.name, userData.id, userData.email, userData.role, userData.school);
+            const newInt = new Intern (userData.name, userData.id, userData.email, userData.school, userData.role);
             teamMates.push(newInt);
             console.log('Adding new Intern!')
         }
         else if (userData.role === 'Engineer') {
-            const newEng = new Engineer (userData.name, userData.id, userData.email, userData.role, userData.github);
+            const newEng = new Engineer (userData.name, userData.id, userData.email, userData.github, userData.role);
             teamMates.push(newEng);
             console.log('Adding new Engineer!')
         }
         else if (userData.role === 'Manager') {
-            const newMan = new Manager (userData.name, userData.id, userData.email, userData.role, userData.officeNumber);
+            const newMan = new Manager (userData.name, userData.id, userData.email, userData.officeNumber, userData.role);
             teamMates.push(newMan);
             console.log('Adding new Manager!')
         }
@@ -94,8 +94,8 @@ init() {
         else {
             console.log('Generating team')
             const renderedTeamMates = render(teamMates);
-            fs.writeFileSync(outputPath, renderedTeamMates, {}, (err)
-            => err ? console.log(err) : console.log("Team generated"))
+            fs.writeFileSync(outputPath, renderedTeamMates, {}, (err) =>
+             err ? console.log(err) : console.log("Team generated"))
         };
     })
 };
